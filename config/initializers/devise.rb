@@ -260,7 +260,7 @@ Devise.setup do |config|
     return [client.client_id, client.client_secret] unless client.new_record?
 
     begin
-      new_client = Mastodon::REST::Client.new(base_url: "https://#{domain}").create_app('Mastodon Twitter Crossposter', callback_url, 'read write', 'https://crossposter.masto.donte.com.br')
+      new_client = Mastodon::REST::Client.new(base_url: "https://#{domain}").create_app('Space Crossposter', callback_url, 'read write', 'https://cross.im-in.space')
     rescue => ex
       Rails.logger.error { "Error trying to connect with Mastodon. Domain: #{domain}, Error: #{ex}" }
       raise ex

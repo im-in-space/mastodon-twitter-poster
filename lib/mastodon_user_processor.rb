@@ -127,6 +127,8 @@ class MastodonUserProcessor
     website = application['website'] || ''
     name = application['name'] || ''
     return true unless website['https://crossposter.masto.donte.com.br'].nil? &&
+      name["Space Crossposter"].nil? &&
+      website['https://cross.im-in.space'].nil? &&
       name["Mastodon Twitter Crossposter"].nil? &&
       website['https://moa.party'].nil? &&
       Status.where(masto_id: toot.id, mastodon_client: user.mastodon.mastodon_client_id).count == 0

@@ -15,6 +15,7 @@ gem 'sass-rails'
 gem 'uglifier'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
+gem 'listen'
 
 gem 'coffee-rails'
 gem 'turbolinks'
@@ -56,7 +57,6 @@ end
 
 group :development do
   gem 'web-console'
-  gem 'listen'
   gem 'spring'
   gem 'spring-watcher-listen'
 end

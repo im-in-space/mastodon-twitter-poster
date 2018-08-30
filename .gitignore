@@ -20,5 +20,10 @@
 .byebug_history
 /public/packs
 /node_modules
+/vendor
+/public/assets
+/config/initializers/sidekiq.rb
+.env
+.env.*
 
 coverage
