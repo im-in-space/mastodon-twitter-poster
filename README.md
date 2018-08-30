@@ -1,11 +1,11 @@
 <p align="center"><img src="app/logo/Logo1.png" alt="mastodon-twitter-poster" height="300px"></p>
 
 
-# Mastodon-Twitter Crossposter [![Maintainability](https://api.codeclimate.com/v1/badges/5ce2dc7dbf21d7a7fd4d/maintainability)](https://codeclimate.com/github/renatolond/mastodon-twitter-poster/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/5ce2dc7dbf21d7a7fd4d/test_coverage)](https://codeclimate.com/github/renatolond/mastodon-twitter-poster/test_coverage) [![Build Status](https://travis-ci.org/renatolond/mastodon-twitter-poster.svg?branch=master)](https://travis-ci.org/renatolond/mastodon-twitter-poster)
+# Mastodon-Twitter Crossposter [![Maintainability](https://api.codeclimate.com/v1/badges/c6930f64e9de4ec701ab/maintainability)](https://codeclimate.com/github/im-in-space/mastodon-twitter-poster/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/c6930f64e9de4ec701ab/test_coverage)](https://codeclimate.com/github/im-in-space/mastodon-twitter-poster/test_coverage) [![Build Status](https://travis-ci.org/im-in-space/mastodon-twitter-poster.svg?branch=master)](https://travis-ci.org/im-in-space/mastodon-twitter-poster)
 
 This is an app for crossposting between Mastodon and Twitter. The app is made so that multiple users can connect to it using the OAuth interface from both Twitter and Mastodon and choose options on how the crosspost should work.
 
-If you just want to use it, there's one running at https://crossposter.masto.donte.com.br, which you can use from whatever Mastodon server you are in
+If you just want to use it, there's one running at https://cross.im-in.space, which you can use from whatever Mastodon server you are in
 
 ## Features
 
@@ -41,7 +41,7 @@ Rails 5.1
 
 ## Requirements
 
-Without extra configuration, a local postgres instance is needed. Node 6.11 is needed for statsd, can be installed using [nvm](https://github.com/creationix/nvm).
+Without extra configuration, a local postgres instance is needed. Node 6.11 is needed for statsd, can be installed using [nvm](https://github.com/creationix/nvm). (Or use Node 8.x if you don't care.)
 
 The poster uses the [ruby-filemagic gem](https://github.com/blackwinter/ruby-filemagic) for detecting the types of the files posted. Follow the instructions described in the README to install the needed library and headers.
 
