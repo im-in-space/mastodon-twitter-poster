@@ -106,7 +106,7 @@ class TwitterUserProcessor
   def posted_by_crossposter
     return true unless tweet.source['https://crossposter.masto.donte.com.br'].nil? &&
     tweet.source['https://github.com/renatolond/mastodon-twitter-poster'].nil? &&
-    tweet.source['https://cross.kdy.ch'].nil? &&
+    tweet.source[Rails.configuration.x.domain].nil? &&
     tweet.source['https://moa.party'].nil? &&
     Status.find_by_tweet_id(tweet.id) == nil
     false
@@ -167,7 +167,7 @@ class TwitterUserProcessor
         save_status = true
         toot(text, @medias[0..3], tweet.possibly_sensitive? || user.twitter_content_warning.present? || cw.present?, save_status, cw || user.twitter_content_warning)
       else
-        text, cw = convert_twitter_text("RT @#{quote.user.screen_name} #{quote.full_text}", quote.urls, quote.media)
+        text, _ = convert_twitter_text("RT @#{quote.user.screen_name} #{quote.full_text}", quote.urls, quote.media)
         text << "\n\n🐦🔗: #{quote.url}" if user.quote_post_as_old_rt_with_link?
         save_status = false
         @idempotency_key = "#{user.mastodon.uid.split('@')[0]}-#{quote.id}"

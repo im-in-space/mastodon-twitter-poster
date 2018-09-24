@@ -130,6 +130,8 @@ class MastodonUserProcessor
       name["Space Crossposter"].nil? &&
       website['https://cross.im-in.space'].nil? &&
       name["Mastodon Twitter Crossposter"].nil? &&
+      website[Rails.configuration.x.domain].nil? &&
+      name[Rails.configuration.x.application_name].nil? &&
       website['https://moa.party'].nil? &&
       Status.where(masto_id: toot.id, mastodon_client: user.mastodon.mastodon_client_id).count == 0
     false
@@ -284,7 +286,7 @@ class MastodonUserProcessor
 
   def tweet(content, opts = {})
     Rails.logger.debug { "Posting to twitter: #{content}" }
-    raise 'Contains @' if content.gsub(toot.url, '').match?(/[^A-Za-z]@/)
+    raise 'Contains @' if content.gsub(toot.url, '').gsub(/https:\/\/[^\s\/]+\/[@＠][^\s\/]+\/[0-9]+/, '').gsub('@ ', '').gsub(/[@＠]\Z/, '').match?(/(?:^|[^A-Za-z0-9])[@＠]/)
     begin
       status = user.twitter_client.update(content, opts)
     rescue Twitter::Error::Forbidden => ex

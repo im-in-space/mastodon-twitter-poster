@@ -1,86 +1,75 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>MastodonTwitterPoster</title>
+    <title><%= Rails.configuration.x.application_name %></title>
     <%= csrf_meta_tags %>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
     <link href="https://cdn.jsdelivr.net/npm/fork-awesome@1.0.11/css/fork-awesome.min.css" rel="stylesheet" integrity="sha384-uuYw9QCBRSK1iU8peX/dvpGqv5uv83afJrv7ZBTX8tG7dB+HR6JUDl20dBl30UZO" crossorigin="anonymous">
   </head>
 
   <body>
-    <div class="container">
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-        <%= link_to('Space Crossposter', :root, class: 'navbar-brand') %>
+    <nav class="navbar">
+      <div class="container">
+        <div class="navbar-brand">
+          <%= link_to(Rails.configuration.x.application_name, :root, class: 'navbar-item') %>
+          <span class="navbar-burger burger" data-target="navbarMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </div>
+        <div id="navbarMenu" class="navbar-menu">
+          <div class="navbar-start">
+            <%= link_to(t(:home), root_path, class: 'navbar-item')%>
+            <%= link_to(t(:features), "#{Rails.configuration.x.repo}#features", target: :_blank, class: 'navbar-item') %>
+            <%= link_to(t(:status), Rails.configuration.x.stats, target: :_blank, class: 'navbar-item') unless Rails.configuration.x.stats.blank? %>
           </div>
-          <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-              <li><%= link_to(t(:home), root_path)%></li>
-            </ul>
-            <ul class="nav navbar-nav">
-              <li><%= link_to(t(:features), 'https://github.com/im-in-space/mastodon-twitter-poster#features', target: :_blank) %></li>
-            </ul>
-<!--
-            <ul class="nav navbar-nav">
-              <li><%= link_to(t(:status), 'https://metrics.librato.com/s/public/241h4bwu2?duration=21600', target: :_blank) %></li>
-            </ul>
--->
+          <div class="navbar-end">
             <% if current_user %>
-            <ul class="nav navbar-nav navbar-right">
-              <li><%= link_to(t(:log_out), destroy_user_session_path, method: :delete) %></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li><%= link_to(t(:options), user_path) %></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li><%= link_to(t(:accounts), account_path) %></li>
-            </ul>
+            <%= link_to(t(:accounts), account_path, class: 'navbar-item') %>
+            <%= link_to(t(:options), user_path, class: 'navbar-item') %>
+            <%= link_to(t(:log_out), destroy_user_session_path, method: :delete, class: 'navbar-item') %>
             <% end %>
-          </div><!--/.nav-collapse -->
-        </div><!--/.container-fluid -->
-      </nav>
+          </div>
+        </div>
+      </div>
+    </nav>
+      <% if flash[:error] %>
+      <div class="notification is-danger">
+        <%= flash[:error] %>
+      </div>
+      <% end %>
+      <% if flash[:alert] %>
+      <div class="notification is-danger">
+        <%= flash[:alert] %>
+      </div>
+      <% end %>
+      <% if flash[:notice] %>
+      <div class="notification is-info">
+        <%= flash[:notice] %>
+      </div>
+      <% end %>
+      <% if flash[:success] %>
+      <div class="notification is-success">
+        <%= flash[:success] %>
+      </div>
+      <% end %>
+      <div class="section">
+        <%= yield %>
+      </div>
       <div class="alert alert-warning" role="alert">
         Consider this instance as a <strong>beta</strong>.<br/>
         It might break and not crosspost some messages for whatever reason.
       </div>
-      <% if flash[:success] %>
-      <div class="alert alert-success" role="alert">
-        <%= flash[:success] %>
-      </div>
-      <% end %>
-      <% if flash[:notice] %>
-      <div class="alert alert-info" role="alert">
-        <%= flash[:notice] %>
-      </div>
-      <% end %>
-      <% if flash[:alert] %>
-      <div class="alert alert-warning" role="alert">
-        <%= flash[:alert] %>
-      </div>
-      <% end %>
-      <% if flash[:error] %>
-      <div class="alert alert-danger" role="alert">
-        <%= flash[:error] %>
-      </div>
-      <% end %>
-      <%= yield %>
     </div>
     <hr />
     <footer class="footer">
-      <div class="container">
-
-        <p><%=t :service_ran_by%> <%=link_to('@kdy@im-in.space', 'https://im-in.space/@kdy') %> / <%=link_to('@0kody', 'https://twitter.com/0kody')%>. <%=link_to(t(:source_code_and_issues), 'https://github.com/im-in-space/mastodon-twitter-poster') %>.</br>
-        <%=t(:for_news_and_status)%> <%= link_to('https://im-in.space/@status', class: 'btn btn-social btn-sm btn-mastodon', target: '_blank') do %>
-        <i class="fa fa-mastodon" aria-hidden="true"></i> <%= t('follow_us_on_the_fediverse') %>
+      <div class="section has-text-centered">
+        <p><%=t :service_ran_by%> <%=link_to("@#{Rails.configuration.x.admin_fedi_at}", Rails.configuration.x.admin_fedi_address) %><% unless Rails.configuration.x.admin_twitter.blank? %> / <%=link_to("@#{Rails.configuration.x.admin_twitter}", "https://twitter.com/#{Rails.configuration.x.admin_twitter}")%> <% end %>. <%=link_to(t(:source_code_and_issues), Rails.configuration.x.repo) %>.</br>
+        <%=t(:for_news_and_status)%> <%= link_to(Rails.configuration.x.announcement_account_address, class: 'button is-mastodon', target: '_blank') do %>
+        <span class="icon is-small"><i class="fa fa-mastodon" aria-hidden="true"></i></span> <span><%= t('follow_us_on_the_fediverse') %></span>
         <% end %></p>
       </div>
     </footer>

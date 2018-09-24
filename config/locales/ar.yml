@@ -1,0 +1,103 @@
+ar:
+  crossposter_explanation: هذه الخدمة تتيح لك ربط حساب ماستدون الخاص بك وحسابك على
+    تويتر قصد النشر فيما بينهما.يمكنك اختيار بعض الخيارات، مثل إذا ما كنت ترغب في
+    نشر الترقيات أو التبويقات غير المدرَجة أو ردودك.
+  login_to_get_started: تسجيل الدخول عبر تويتر وماستدون للشروع في العمل
+  service_ran_by: هذه الخدمة يُديرها
+  source_code_and_issues: الشفرة المصدرية والعَقَبات
+  twitter_logged_in: تم التسجيل عبر تويتر
+  mastodon_logged_in: تم التسجيل عبر ماستدون
+  home: الرئيسية
+  accounts: الحسابات
+  connections: الإرتباطات
+  manage_your_accounts: إدارة حساباتك المتصلة
+  disconnect: قطع الاتصال
+  options: الخيارات
+  masto_boost_do_not_post: لا تنشر الترقيات إلى تويتر
+  masto_boost_post_as_link: 'نشر الترقيات على تويتر كروابط (تم ترقية: https://mastodon.social/@renatolond/15082784)'
+  masto_reply_do_not_post: لا تنشر الردود على تويتر
+  masto_reply_post_self: نشر الردود على تبويقاتي في تويتر (على شكل خيط محادثة)
+  masto_mention_do_not_post: لا تنشر الإشارات على تويتر
+  masto_sync_status_true: مُفعّل
+  masto_sync_status_false: مُوَقّف
+  masto_should_post_unlisted_true: مُفَعَّل
+  masto_should_post_unlisted_false: مُوَقّف
+  masto_should_post_private_true: مُفَعَّل
+  masto_should_post_private_false: مُوَقّف
+  synchronization_options: خيارات المُزامَنة
+  masto_synchronization_status: 'عند نشر التبويقات على تويتر:'
+  post_unlisted_toots: 'نشر التبويقات غير المُدرَجة؟:'
+  post_private_toots: 'نشر التبويقات الخاصة؟:'
+  boost_options: 'خيارات الترقية:'
+  masto_reply_options: 'خيارات الردود:'
+  masto_reply_options_explanation: هذا إذا ما قمت بالضغط على زر الرد على واجهة ماستدون
+    للتفاعل.هو الرد المباشر على تبويق آخَر.
+  masto_mention_options: 'خيارات ذِكر الحسابات:'
+  masto_mention_options_explanation: ''
+  twitter_synchronization_status: 'نشر تغريداتي على ماستدون:'
+  twitter_sync_status_true: مُفَعّل
+  twitter_sync_status_false: مُوَقّف
+  no_sync_right_now: ''
+  toots_posted_to_twitter: حاليًا يجري نشر تبويقاتك على تويتر.
+  tweets_posted_to_mastodon: حاليًا يجري نشر تغريداتك على ماستدون.
+  masto_posting_unlisted: ''
+  masto_not_posting_unlisted: ''
+  masto_posting_private: ''
+  masto_not_posting_private: ''
+  masto_not_posting_boost: ''
+  masto_posting_boost_as_link: ''
+  change_this_on_options: يمكنك تغيير هذه الإعدادات باللجوء إلى %{options}.
+  retweet_options: خيارات إعادة التغريد
+  retweet_do_not_post: لا تقم بنشر إعادات التغريد على ماستدون
+  retweet_post_as_old_rt: ''
+  retweet_post_as_old_rt_with_link: ''
+  quote_options: خيارات الإقتباس
+  quote_do_not_post: لا تقم بنشر الإقتباسات على ماستدون
+  quote_post_as_old_rt: ''
+  quote_post_as_old_rt_with_link: ''
+  twitter_reply_do_not_post: لا تقم بنشر الردود على ماستدون
+  twitter_reply_post_self: ''
+  twitter_reply_options: 'خيارات الرد:'
+  twitter_reply_options_explanation: هذا عند الضغط على زر الرد على واجهة تويتر.هو
+    الرد المباشر على تغريدة أخرى.
+  twitter_not_posting_rt: ''
+  twitter_posting_rt_old_style: ''
+  twitter_posting_rt_old_style_with_link: ''
+  twitter_not_posting_quote: ''
+  twitter_posting_quote_old_style: ''
+  twitter_posting_quote_old_style_with_link: ''
+  twitter_not_posting_reply: ''
+  twitter_posting_reply_to_self: ''
+  masto_not_posting_reply: ''
+  masto_posting_reply_to_self: ''
+  log_out: الخروج
+  for_news_and_status: 'إطّلِع على المستجدّات والمنشورات:'
+  features: الميزات
+  status: الحالة
+  twitter_content_warning: التحذير عن المحتوى لتويتر
+  twitter_content_warning_explanation: ''
+  twitter_content_warning_status: 'سوف يتم نشر كافة تغريداتك وراء تحذير عن المحتوى
+    على الشكل التالي: "%{cw}"'
+  twitter_original_visibility: خصوصية تغريداتك الأصلية عند مبادلة النشر
+  twitter_retweet_visibility: خصوصية التغريدات المعاد تغريدها عند مبادلة النشر
+  twitter_quote_visibility: ''
+  default_visibility: استخدام طريقة العرض الإفتراضية لماستدون
+  masto_privacy:
+    public: للعامة
+    private: خاص
+    unlisted: غير مُدرَج
+  masto_privacy_for_status:
+    default: الخصوصية الإفتراضية لماستدون.
+    public: للعامة.
+    private: خاص.
+    unlisted: غير مُدرَج.
+  twitter_original_visibility_status: ''
+  twitter_retweet_visibility_status: ''
+  twitter_quote_visibility_status: ''
+  masto_login:
+    please: ربط حساب ماستدون الخاص بك
+    identifier: المُعرَّف
+    login: تسجيل الدخول
+    invalid_identifier: معرّف الحساب غير صالح. يجب عليك إدخال المُعرِّف على شكل user@instance  مثل
+      crossposter@masto.donte.com.br
+  follow_us_on_the_fediverse: تابِعنا على الشبكة الموحَّدة في الفيديفرس!
