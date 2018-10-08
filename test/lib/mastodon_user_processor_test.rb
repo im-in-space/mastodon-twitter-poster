@@ -79,6 +79,62 @@ class MastodonUserProcessorTest < ActiveSupport::TestCase
     mastodon_user_processor.process_toot
   end
 
+  test 'process toot - allow list: does not contain words' do
+    user = create(:user_with_mastodon_and_twitter, masto_domain: 'masto.donte.com.br', masto_word_list: ['chocolate'], masto_block_or_allow_list: 'ALLOW_WITH_WORDS')
+
+    stub_request(:get, 'https://masto.donte.com.br/api/v1/statuses/98894252337740537').to_return(web_fixture('mastodon_bad_word.json'))
+    t = user.mastodon_client.status(98894252337740537)
+
+    mastodon_user_processor = MastodonUserProcessor.new(t, user)
+    mastodon_user_processor.expects(:process_boost).never
+    mastodon_user_processor.expects(:process_reply).never
+    mastodon_user_processor.expects(:process_mention).never
+    mastodon_user_processor.expects(:process_normal_toot).never
+    mastodon_user_processor.process_toot
+  end
+
+  test 'process toot - allow list: contain words' do
+    user = create(:user_with_mastodon_and_twitter, masto_domain: 'masto.donte.com.br', masto_word_list: ['chocolate'], masto_block_or_allow_list: 'ALLOW_WITH_WORDS')
+
+    stub_request(:get, 'https://masto.donte.com.br/api/v1/statuses/98894252337740537').to_return(web_fixture('mastodon_good_word.json'))
+    t = user.mastodon_client.status(98894252337740537)
+
+    mastodon_user_processor = MastodonUserProcessor.new(t, user)
+    mastodon_user_processor.expects(:process_boost).never
+    mastodon_user_processor.expects(:process_reply).never
+    mastodon_user_processor.expects(:process_mention).never
+    mastodon_user_processor.expects(:process_normal_toot).once
+    mastodon_user_processor.process_toot
+  end
+
+  test 'process toot - block list: contain words' do
+    user = create(:user_with_mastodon_and_twitter, masto_domain: 'masto.donte.com.br', masto_word_list: ['broccoli'], masto_block_or_allow_list: 'BLOCK_WITH_WORDS')
+
+    stub_request(:get, 'https://masto.donte.com.br/api/v1/statuses/98894252337740537').to_return(web_fixture('mastodon_bad_word.json'))
+    t = user.mastodon_client.status(98894252337740537)
+
+    mastodon_user_processor = MastodonUserProcessor.new(t, user)
+    mastodon_user_processor.expects(:process_boost).never
+    mastodon_user_processor.expects(:process_reply).never
+    mastodon_user_processor.expects(:process_mention).never
+    mastodon_user_processor.expects(:process_normal_toot).never
+    mastodon_user_processor.process_toot
+  end
+
+  test 'process toot - block list: does not contain words' do
+    user = create(:user_with_mastodon_and_twitter, masto_domain: 'masto.donte.com.br', masto_word_list: ['broccoli'], masto_block_or_allow_list: 'BLOCK_WITH_WORDS')
+
+    stub_request(:get, 'https://masto.donte.com.br/api/v1/statuses/98894252337740537').to_return(web_fixture('mastodon_good_word.json'))
+    t = user.mastodon_client.status(98894252337740537)
+
+    mastodon_user_processor = MastodonUserProcessor.new(t, user)
+    mastodon_user_processor.expects(:process_boost).never
+    mastodon_user_processor.expects(:process_reply).never
+    mastodon_user_processor.expects(:process_mention).never
+    mastodon_user_processor.expects(:process_normal_toot).once
+    mastodon_user_processor.process_toot
+  end
+
   test 'process toot - posted by the crossposter' do
     user = create(:user_with_mastodon_and_twitter, masto_domain: 'mastodon.xyz')
 
@@ -226,23 +282,6 @@ class MastodonUserProcessorTest < ActiveSupport::TestCase
     status = create(:status, masto_id: t.id, mastodon_client: user.mastodon.mastodon_client)
 
     assert MastodonUserProcessor.new(t, user).posted_by_crossposter
-  end
-
-  test 'Recover from too big status' do
-    user = create(:user_with_mastodon_and_twitter, masto_domain: 'mastodon.xyz')
-
-    text = 'One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted     his head a little he could see his brown belly, slightly domed and… https://mastodon.xyz/@renatolonddev/98974469120828056'
-
-    stub_request(:get, 'https://mastodon.xyz/api/v1/statuses/98974469120828056').to_return(web_fixture('masto_500_chars.json'))
-    t = user.mastodon_client.status(98974469120828056)
-
-    stub_big_post = stub_request(:post, 'https://api.twitter.com/1.1/statuses/update.json').with { |request| request.body == 'status=One+morning%2C+when+Gregor+Samsa+woke+from+troubled+dreams%2C+he+found+himself+transformed+in+his+bed+into+a+horrible+vermin.+He+lay+on+his+armour-like+back%2C+and+if+he+lifted+++++his+head+a+little+he+could+see+his+brown+belly%2C+slightly+domed+and%E2%80%A6+https%3A%2F%2Fmastodon.xyz%2F%40renatolonddev%2F98974469120828056'}.to_return(web_fixture('twitter_update_too_big.json'))
-    stub_request(:post, 'https://api.twitter.com/1.1/statuses/update.json').with { |request| request.body == 'status=One+morning%2C+when+Gregor+Samsa+woke+from+troubled+dreams%2C+he+found+himself+transformed+in+his+bed+into+a%E2%80%A6+https%3A%2F%2Fmastodon.xyz%2F%40renatolonddev%2F98974469120828056' }.to_return(web_fixture('twitter_update.json'))
-
-    mastodon_user_processor = MastodonUserProcessor.new(t, user)
-    mastodon_user_processor.tweet(text)
-
-    assert_requested(stub_big_post)
   end
 
   test 'upload images' do

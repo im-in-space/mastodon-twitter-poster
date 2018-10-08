@@ -56,6 +56,8 @@ class MastodonUserProcessor
     opts
   end
 
+  TWITTER_CANNOT_PERFORM_WRITE_ACTIONS = 261
+
   def self.get_last_toots_for_user(user)
     return unless user.mastodon && user.twitter
 
@@ -86,9 +88,14 @@ class MastodonUserProcessor
           raise TootError.new(ex)
         end
       rescue Twitter::Error::Forbidden => ex
-        Rails.logger.error { "Bad authentication for user #{user.mastodon.uid} while processing toot #{t.id}. #{ex.to_json}." }
-        stats.increment("twitter.bad_auth")
-        raise TootError.new(ex)
+        if ex.code == TWITTER_CANNOT_PERFORM_WRITE_ACTIONS
+           Rails.logger.error { "Forbidden to write to twitter while processing #{user.mastodon.uid} while processing toot #{t.id}." }
+           stats.increment("twitter.write_action_forbidden")
+        else
+           Rails.logger.error { "Bad authentication for user #{user.mastodon.uid} while processing toot #{t.id}. #{ex.to_json}." }
+           stats.increment("twitter.bad_auth")
+           raise TootError.new(ex)
+        end
       rescue => ex
         Rails.logger.error { "Could not process user #{user.mastodon.uid}, toot #{t.id}. -- #{ex} -- Bailing out" }
         stats.increment("toot.processing_error")
@@ -122,6 +129,10 @@ class MastodonUserProcessor
     @replied_status
   end
 
+  def text_filter
+    @text_filter ||= TextFilter.new(@user)
+  end
+
   def posted_by_crossposter
     application = toot.application || {}
     website = application['website'] || ''
@@ -141,6 +152,12 @@ class MastodonUserProcessor
     if posted_by_crossposter
       Rails.logger.debug('Ignoring toot, was posted by the crossposter')
       MastodonUserProcessor::stats.increment('toot.posted_by_crossposter.skipped')
+      return
+    end
+
+    if text_filter.should_filter_coming_from_mastodon?(toot.text_content, toot.spoiler_text)
+      Rails.logger.debug('Ignoring toot, does not obey word list')
+      MastodonUserProcessor::stats.increment('toot.word_list.skipped')
       return
     end
 
@@ -281,24 +298,18 @@ class MastodonUserProcessor
     end
   end
 
-  TWITTER_TOO_LONG_ERROR_CODE = 186
-  TWITTER_OLD_MAX_CHARS = 140
-
   def tweet(content, opts = {})
     Rails.logger.debug { "Posting to twitter: #{content}" }
-    raise 'Contains @' if content.gsub(toot.url, '').gsub(/https:\/\/[^\s\/]+\/[@＠][^\s\/]+\/[0-9]+/, '').gsub('@ ', '').gsub(/[@＠]\Z/, '').match?(/(?:^|[^A-Za-z0-9])[@＠]/)
-    begin
-      status = user.twitter_client.update(content, opts)
-    rescue Twitter::Error::Forbidden => ex
-      raise ex unless ex.code == TWITTER_TOO_LONG_ERROR_CODE
-      status = user.twitter_client.update(TootTransformer.new(TWITTER_OLD_MAX_CHARS).transform(content, toot.url, user.mastodon_domain, user.mastodon.mastodon_client.domain), opts)
-    end
+    raise 'Contains @' if content.gsub(toot.url, '').gsub(/https:\/\/[^\s\/]+\/[@＠][^\s\/]+(?:\/|\w)/, '').gsub('@ ', '').gsub(/[@＠]\Z/, '').match?(/(?:^|[^A-Za-z0-9])[@＠]/)
+    status = user.twitter_client.update(content, opts)
     Status.create(mastodon_client: user.mastodon.mastodon_client, masto_id: toot.id, tweet_id: status.id)
     MastodonUserProcessor::stats.increment('toot.posted_to_twitter')
     MastodonUserProcessor::stats.timing('toot.average_time_to_post', ((Time.now-DateTime.strptime(toot.created_at, '%FT%T.%L%z'))*1000).round(5))
   rescue ActiveRecord::RecordNotUnique
     Rails.logger.warn { "Duplicated tweet when crossposting #{user.mastodon.uid}, toot #{toot.id}. -- #{status.id} -- Skipping" }
   end
+
+  TWITTER_DURATION_TOO_SHORT = 324
 
   def treat_media_attachments(medias)
     media_ids = []
@@ -331,6 +342,12 @@ class MastodonUserProcessor
         end
 
         media_ids << upload_media(media, file, file_type)
+      rescue Twitter::Error::BadRequest => ex
+        if ex.code == TWITTER_DURATION_TOO_SHORT
+          next
+        else
+          raise ex
+        end
       ensure
         file.close
         file.unlink

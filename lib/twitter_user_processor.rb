@@ -103,6 +103,10 @@ class TwitterUserProcessor
     @replied_status_id
   end
 
+  def text_filter
+    @text_filter ||= TextFilter.new(@user)
+  end
+
   def posted_by_crossposter
     return true unless tweet.source['https://crossposter.masto.donte.com.br'].nil? &&
     tweet.source['https://github.com/renatolond/mastodon-twitter-poster'].nil? &&
@@ -116,6 +120,12 @@ class TwitterUserProcessor
     if(posted_by_crossposter)
       Rails.logger.debug('Ignoring tweet, was posted by the crossposter')
       self.class.stats.increment('tweet.posted_by_crossposter.skipped')
+      return
+    end
+
+    if text_filter.should_filter_coming_from_twitter?(tweet.full_text)
+      Rails.logger.debug('Ignoring tweet, does not obey word list')
+      self.class.stats.increment('tweet.word_list.skipped')
       return
     end
 
@@ -222,11 +232,12 @@ class TwitterUserProcessor
   def convert_twitter_text(text, urls, media)
     text = TweetTransformer::replace_links(text, urls)
     text = TweetTransformer::replace_mentions(text)
-    text, cw = TweetTransformer::detect_cw(text)
+    text, @cw = TweetTransformer::detect_cw(text)
     text = find_media(media, text)
     text = self.class.html_entities.decode(text)
     text = '🖼️' if text.empty?
-    [text, cw]
+    @cw = nil if @cw.blank?
+    [text, @cw]
   end
 
   def process_normal_tweet
@@ -246,6 +257,10 @@ class TwitterUserProcessor
     end
   end
 
+  def cw
+    @cw ||= ''
+  end
+
   def find_media(tweet_medias, text)
     @medias = []
     media_type = nil
@@ -253,14 +268,17 @@ class TwitterUserProcessor
       media_type = media.type if media_type.nil?
       if media_type != media.type
         text = text.gsub(media.url, media.expanded_url.to_s).strip
+        @cw = cw.gsub(media.url, media.expanded_url.to_s).strip
         next
       end
       media_url = media_url_for(media)
       if media_url.nil?
         text = text.gsub(media.url, media.expanded_url.to_s).strip
+        @cw = cw.gsub(media.url, media.expanded_url.to_s).strip
         next
       end
       new_text = text.gsub(media.url, '').strip
+      new_cw = cw.gsub(media.url, '').strip
       begin
         file = Tempfile.new(['media', File.extname(clean_url(media_url))], "#{Rails.root}/tmp")
         file.binmode
@@ -268,6 +286,7 @@ class TwitterUserProcessor
         file.rewind
         @medias << upload_media(media, file)
         text = new_text
+        @cw = new_cw
       rescue UnknownMediaException => ex
         Rails.logger.error("Caught exception #{ex.inner_exception} when uploading #{media_url}")
         next

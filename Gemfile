@@ -38,6 +38,7 @@ gem 'foreman'
 gem 'dotenv-rails'
 gem 'ruby-filemagic'
 gem 'sidekiq'
+gem 'twitter-text'
 
 group :development, :test do
   gem 'byebug'
