@@ -56,12 +56,12 @@
         <%= flash[:success] %>
       </div>
       <% end %>
-      <div class="section">
-        <%= yield %>
-      </div>
-      <div class="alert alert-warning" role="alert">
+      <div class="notification is-info">
         Consider this instance as a <strong>beta</strong>.<br/>
         It might break and not crosspost some messages for whatever reason.
+      </div>
+      <div class="section">
+        <%= yield %>
       </div>
     </div>
     <hr />
