@@ -15,8 +15,6 @@
 # gem 'pg'
 #
 default: &default
-  host: /var/run/postgresql
-  port: 5434
   adapter: postgresql
   encoding: unicode
   # For details on connection pooling, see Rails configuration guide
@@ -82,6 +80,8 @@ test:
 #
 production:
   <<: *default
+  host: /var/run/postgresql
+  port: 5434
   database: <%= ENV['DB_NAME'] || 'mastodon_twitter_poster_production' %>
   username: <%= ENV['DB_USER'] || 'mastodon_twitter_poster' %>
   password: <%= ENV['DB_PASS'] || ENV['MASTODON_TWITTER_POSTER_DATABASE_PASSWORD'] %>
